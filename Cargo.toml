@@ -1,0 +1,8 @@
+[package]
+edition = "2021"
+name = "bevy_webview"
+version = "0.0.1"
+description = "(Unofficial) webview integration WIP for Bevy engine"
+license = "MIT"
+
+[dependencies]
