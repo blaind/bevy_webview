@@ -1,0 +1,42 @@
+<html>
+  <head> </head>
+  <body style="background: rgb(58, 58, 58)">
+    <div style="margin: 10px auto; width: 80%; text-align: center">
+      <script>
+        async function login() {
+          var txt = document.getElementById("text");
+          txt.value += "hello ";
+
+          let response = await rpc.notify("login", {
+            username: "test",
+          });
+        }
+
+        async function despawn() {
+          rpc.notify("_webview", { despawn: null });
+        }
+
+        rpc.on("app_time", (app_time) => {
+          document.getElementById("currentTime").innerHTML =
+            app_time.seconds_since_startup.toFixed(4);
+        });
+      </script>
+
+      <p style="font-weight: bold; font-size: 24; color: #cdcdcd">
+        Hello world! <span id="currentTime"></span>
+      </p>
+
+      <textarea id="text" rows="3"></textarea>
+      <br />
+
+      <script>
+        var txt = document.getElementById("text");
+        txt.value = "hello";
+      </script>
+
+      <button onclick="login();">Login</button>
+      <button onclick="despawn();">Despawn webview</button>
+      <button onclick="rpc.notify('close');">Close webview</button>
+    </div>
+  </body>
+</html>

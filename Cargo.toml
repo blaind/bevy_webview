@@ -1,8 +1,47 @@
 [package]
 edition = "2021"
 name = "bevy_webview"
-version = "0.0.1"
+version = "0.1.0"
 description = "(Unofficial) webview integration WIP for Bevy engine"
-license = "MIT"
+license = "Apache-2.0 OR MIT"
+
+[workspace]
+members = [
+  "crates/headless_webview",
+  "crates/headless_webview_engine",
+]
 
 [dependencies]
+crossbeam-channel = "0.5.1"
+headless_webview = { path = "./crates/headless_webview", features = ["protocol"] }
+headless_webview_engine = { path = "./crates/headless_webview_engine", optional = true }
+
+serde = { version = "1.0", features = [ "derive" ] }
+serde_json = "1.0"
+
+# TODO: feature-gate url + mime_guess only when using local assets?
+url = "2.2"
+mime_guess = "2.0.3"
+
+[dependencies.bevy]
+version = "0.6"
+default-features = false
+features = ["render"]
+
+[dev-dependencies.bevy]
+version = "0.6"
+default-features = false
+features = [
+  "bevy_winit",
+  "render",
+  "png",
+  "hdr",
+  "x11",
+]
+
+[dev-dependencies]
+rand = "0.8.4"
+
+[features]
+default = ["engine"]
+engine = ["headless_webview_engine"]
