@@ -20,7 +20,7 @@ The plugin uses platform-native webviews ([webkitgtk](https://webkitgtk.org/) on
 ## Docs
 
 - [Bevy Webview Book](https://blaind.github.io/bevy_webview_book/)
-- [Official Examples](https://github.com/blaind/bevy_webview/tree/latest/examples)
+- [Official Examples](https://github.com/blaind/bevy_webview/tree/main/examples)
 
 ## License
 
