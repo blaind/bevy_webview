@@ -1,0 +1,58 @@
+[package]
+name = "headless_webview_engine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+headless_webview = { path = "../headless_webview" }
+url = "2.2"
+log = "0.4"
+
+[target.'cfg(any(target_os = "linux", target_os = "dragonfly", target_os = "freebsd", target_os = "openbsd", target_os = "netbsd"))'.dependencies]
+gtk = { version = "0.15.2", features = [ "v3_24" ] }
+gdk = { version = "0.15.2", features = [ "v3_24" ] }
+webkit2gtk = { version = "0.17.1", features = [ "v2_30" ] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+webview2-com = "0.10.0"
+windows_macros = "0.30.0" # FIXME: source? where does this come from?
+sys-info = "0.9"
+png = "0.17.2"
+crossbeam-channel = "0.5.1"
+crossbeam-deque = "0.8.1"
+
+[target.'cfg(target_os = "windows")'.dependencies.windows]
+version = "0.30.0"
+features = [
+  "alloc",
+  "Foundation",
+  "Win32_Foundation",
+  "Win32_Graphics_Dwm",
+  "Win32_Graphics_Gdi",
+  "Win32_Graphics_Dxgi",
+  "Win32_Graphics_Dxgi_Common",
+  "Win32_Graphics_Direct3D",
+  "Win32_Graphics_Direct3D11",
+  "Win32_System_LibraryLoader", # FIXME remove?
+  "Win32_System_Com",
+  "Win32_System_Com_StructuredStorage",
+  "Win32_System_Ole",
+  #"Win32_System_SystemServices",
+  "Win32_System_WinRT",
+  "Win32_System_WinRT_Direct3D11",
+  "Win32_System_WinRT_Graphics_Capture",
+  "Win32_System_WinRT_Composition",
+  #"Win32_UI_Shell",
+  "Win32_UI_WindowsAndMessaging",
+  "Graphics",
+  "Graphics_Capture",
+  "Graphics_DirectX",
+  "Graphics_DirectX_Direct3D11",
+  "Graphics_Imaging",
+  "UI_Composition_Desktop",
+  "Foundation_Numerics",
+  "System",
+]
+
+[dev-dependencies]
+image = { version = "0.23.14", default_features = false, features = ["png"] }
