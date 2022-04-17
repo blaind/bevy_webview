@@ -1,6 +1,6 @@
 [package]
 name = "bevy_webview"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 description = "Rapidly iterate and build Bevy UI's with existing web-based technologies"
 repository = "https://github.com/blaind/bevy_webview"
