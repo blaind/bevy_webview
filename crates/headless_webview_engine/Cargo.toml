@@ -1,10 +1,12 @@
 [package]
 name = "headless_webview_engine"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
+license = "Apache-2.0 OR MIT"
+description = "Headless Webview implementation for Linux - WIP"
 
 [dependencies]
-headless_webview = { path = "../headless_webview" }
+headless_webview = { version = "0.1.1", path = "../headless_webview" }
 url = "2.2"
 log = "0.4"
 

@@ -1,9 +1,15 @@
 [package]
-edition = "2021"
 name = "bevy_webview"
-version = "0.1.0"
-description = "(Unofficial) webview integration WIP for Bevy engine"
+version = "0.2.1"
+edition = "2021"
+description = "Rapidly iterate and build Bevy UI's with existing web-based technologies"
+repository = "https://github.com/blaind/bevy_webview"
+keywords = ["bevy"]
+categories = [
+    "game-engines"
+]
 license = "Apache-2.0 OR MIT"
+readme = "README.md"
 
 [workspace]
 members = [
@@ -13,8 +19,8 @@ members = [
 
 [dependencies]
 crossbeam-channel = "0.5.1"
-headless_webview = { path = "./crates/headless_webview", features = ["protocol"] }
-headless_webview_engine = { path = "./crates/headless_webview_engine", optional = true }
+headless_webview = { version = "0.1.1", path = "./crates/headless_webview", features = ["protocol"] }
+headless_webview_engine = { version = "0.1.1", path = "./crates/headless_webview_engine", optional = true }
 
 serde = { version = "1.0", features = [ "derive" ] }
 serde_json = "1.0"
@@ -24,12 +30,12 @@ url = "2.2"
 mime_guess = "2.0.3"
 
 [dependencies.bevy]
-version = "0.6"
+version = "0.7"
 default-features = false
 features = ["render"]
 
 [dev-dependencies.bevy]
-version = "0.6"
+version = "0.7"
 default-features = false
 features = [
   "bevy_winit",

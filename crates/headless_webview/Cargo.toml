@@ -1,7 +1,9 @@
 [package]
 name = "headless_webview"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
+license = "Apache-2.0 OR MIT"
+description = "Headless Webview Traits"
 
 [dependencies]
 url = "2.2"

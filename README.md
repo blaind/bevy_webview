@@ -9,9 +9,9 @@
 
 Rapidly iterate and build [Bevy](https://bevyengine.org/) UI's with existing web-based technologies
 
-![Example](assets/bevy_webview.png)
+**It is currently very early days of this plugin - only Linux supported at the moment, many things are broken (e.g. keyboard input, mouse interaction except a primary button)**
 
-**It is currently very early days of this plugin, and many things are broken (e.g. keyboard input, mouse interaction except for primary button)**
+![Example](assets/bevy_webview.png)
 
 Supported platforms: Linux. Windows [being evaluated](https://github.com/blaind/bevy_webview/issues/7), Mac probably doable ([pull requests welcome, #6](https://github.com/blaind/bevy_webview/issues/6)). Android & IOS are currently unchartered territory.
 
