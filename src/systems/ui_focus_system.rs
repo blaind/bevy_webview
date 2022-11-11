@@ -1,5 +1,5 @@
 //! This module is based on bevy_ui, with added positions for Interaction
-use bevy::{core::FloatOrd, input::ElementState, prelude::*, ui::FocusPolicy};
+use bevy::{utils::FloatOrd, input::ButtonState, prelude::*, ui::FocusPolicy};
 
 use crate::{
     types::{EventTransport, WebviewAction},
@@ -79,7 +79,7 @@ pub(crate) fn webview_ui_focus_system(
                         .send(WebviewAction::Click((
                             entity,
                             MouseButton::Left,
-                            ElementState::Released,
+                            ButtonState::Released,
                             offset, // FIXME : currently using wrong offset
                         )))
                         .unwrap();
@@ -99,7 +99,7 @@ pub(crate) fn webview_ui_focus_system(
         .iter_mut()
         .filter_map(
             |(entity, node, global_transform, interaction, focus_policy, clip)| {
-                let position = global_transform.translation;
+                let position = global_transform.translation();
                 let ui_position = position.truncate();
                 let extents = node.size / 2.0;
                 let mut min = ui_position - extents;
@@ -154,7 +154,7 @@ pub(crate) fn webview_ui_focus_system(
                     .send(WebviewAction::Click((
                         entity,
                         MouseButton::Left,
-                        ElementState::Pressed,
+                        ButtonState::Pressed,
                         offset,
                     )))
                     .unwrap();
@@ -166,7 +166,7 @@ pub(crate) fn webview_ui_focus_system(
                     .send(WebviewAction::Click((
                         entity,
                         MouseButton::Right,
-                        ElementState::Pressed,
+                        ButtonState::Pressed,
                         offset,
                     )))
                     .unwrap();

@@ -40,7 +40,7 @@ fn setup(
         ..Default::default()
     });
     // camera
-    commands.spawn_bundle(PerspectiveCameraBundle {
+    commands.spawn_bundle(Camera3dBundle {
         transform: Transform::from_xyz(-2.0, 2.5, 5.0)
             .looking_at(Vec3::new(0.0, 2.0, 0.0), Vec3::Y),
         ..Default::default()
@@ -48,7 +48,7 @@ fn setup(
     // webview
     commands.spawn_bundle(WebviewBundle {
         webview: Webview {
-            uri: Some(String::from("https://bevyengine.org/")),
+            uri: Some(String::from("https://html5test.com/")),
             color: Color::rgba(0.3, 0.3, 0.3, 0.5),
             ..Default::default()
         },
