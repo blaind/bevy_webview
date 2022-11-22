@@ -10,13 +10,13 @@ use serde::{Deserialize, Serialize};
 use crate::{systems, PostUpdateLabel, PreUpdateLabel};
 
 /// Mapping of RPC Input Event methods
-#[derive(Default)]
+#[derive(Default, Resource)]
 pub(crate) struct InputEventMapping {
     pub events: HashMap<TypeId, &'static str>,
 }
 
 /// Mapping of RPC Output Event methods
-#[derive(Default)]
+#[derive(Default, Resource)]
 pub(crate) struct OutputEventMapping {
     pub events: HashMap<TypeId, &'static str>,
 }
@@ -204,7 +204,7 @@ impl WebviewApp for App {
 }
 
 /// Enum of builtin event methods
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Resource)]
 #[serde(rename_all(deserialize = "lowercase"))]
 pub(crate) enum BuiltinWebviewEvent {
     Despawn,

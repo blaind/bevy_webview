@@ -53,6 +53,7 @@ pub(crate) struct TextureReceivedEvent {
 }
 
 /// Takes care of event handling between webview impl and bevy system
+#[derive(Resource)]
 pub(crate) struct EventTransport {
     pub webview_action_tx: Sender<WebviewAction>,
     pub texture_rx: Receiver<TextureReceivedEvent>,

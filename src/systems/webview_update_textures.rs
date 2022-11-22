@@ -19,7 +19,7 @@ pub(crate) fn update_webview_textures(
             Option<&Handle<StandardMaterial>>,
             Option<&Node>,
             Option<&mut UiImage>,
-            Option<&mut UiColor>,
+            Option<&mut BackgroundColor>,
             &mut WebviewState,
         ),
         With<Webview>,

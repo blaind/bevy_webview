@@ -101,7 +101,7 @@ pub(crate) fn webview_ui_focus_system(
             |(entity, node, global_transform, interaction, focus_policy, clip)| {
                 let position = global_transform.translation();
                 let ui_position = position.truncate();
-                let extents = node.size / 2.0;
+                let extents = node.size() / 2.0;
                 let mut min = ui_position - extents;
                 let mut max = ui_position + extents;
                 if let Some(clip) = clip {
