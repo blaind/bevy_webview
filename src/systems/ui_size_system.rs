@@ -10,11 +10,11 @@ pub(crate) fn ui_size(
     resized_webviews: Query<(Entity, &Node, &Webview), Changed<Node>>,
 ) {
     for (entity, node, _webview) in resized_webviews.iter() {
-        log::debug!("Webview {:?} resized to {:?}", entity, node.size);
+        log::debug!("Webview {:?} resized to {:?}", entity, node.size());
 
         event_transport
             .webview_action_tx
-            .send(WebviewAction::Resize((entity, node.size)))
+            .send(WebviewAction::Resize((entity, node.size())))
             .unwrap();
     }
 }

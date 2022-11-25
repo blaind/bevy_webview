@@ -86,8 +86,8 @@ pub(crate) fn webview_runner_inner<T: HeadlessWindow>(
                             bevy::prelude::MouseButton::Other(_) => continue,
                         },
                         state: match element_state {
-                            bevy::input::ElementState::Pressed => ElementState::Pressed,
-                            bevy::input::ElementState::Released => ElementState::Released,
+                            bevy::input::ButtonState::Pressed => ElementState::Pressed,
+                            bevy::input::ButtonState::Released => ElementState::Released,
                         },
 
                         // TODO: move position calc to the webview lib?
@@ -108,8 +108,8 @@ pub(crate) fn webview_runner_inner<T: HeadlessWindow>(
                 if let Some(w) = webviews.get(&entity) {
                     w.webview.send_keyboard_input(KeyboardInput {
                         state: match keyboard_input.state {
-                            bevy::input::ElementState::Pressed => ElementState::Pressed,
-                            bevy::input::ElementState::Released => ElementState::Released,
+                            bevy::input::ButtonState::Pressed => ElementState::Pressed,
+                            bevy::input::ButtonState::Released => ElementState::Released,
                         },
                     })
                 }
