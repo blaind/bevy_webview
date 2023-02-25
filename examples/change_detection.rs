@@ -13,15 +13,15 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn_bundle(UiCameraBundle::default());
+    commands.spawn(Camera2dBundle::default());
 
     commands.insert_resource(Elapsed {
         iteration: 0,
-        timer: Timer::new(Duration::from_millis(2000), true),
+        timer: Timer::new(Duration::from_millis(2000), TimerMode::Repeating),
     });
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Resource)]
 struct Elapsed {
     iteration: usize,
     timer: Timer,
@@ -36,16 +36,16 @@ fn change_webview_system(
     if elapsed.timer.tick(time.delta()).just_finished() {
         if elapsed.iteration == 0 {
             // at first tick, spawn the webview
-            commands.spawn_bundle(WebviewUIBundle {
+            commands.spawn(WebviewUIBundle {
                 webview: Webview {
                     uri: Some("https://bevyengine.org/".into()),
                     ..Default::default()
                 },
                 style: Style {
-                    size: Size::new(Val::Percent(50.0), Val::Percent(50.)),
-                    margin: Rect::all(Val::Auto),
-                    justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    margin: UiRect::all(Val::Auto),
+                    size: Size::new(Val::Percent(50.0), Val::Percent(50.)),
                     ..Default::default()
                 },
                 ..Default::default()

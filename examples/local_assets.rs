@@ -11,17 +11,17 @@ fn main() {
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn_bundle(UiCameraBundle::default());
+    commands.spawn(Camera2dBundle::default());
 
     // webview
-    commands.spawn_bundle(WebviewUIBundle {
+    commands.spawn(WebviewUIBundle {
         webview: Webview {
             uri: Some(String::from("webview:///test_webview.html")),
             ..Default::default()
         },
         style: Style {
             size: Size::new(Val::Percent(80.0), Val::Percent(80.)),
-            margin: Rect::all(Val::Auto),
+            margin: UiRect::all(Val::Auto),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
             ..Default::default()
@@ -31,27 +31,26 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     // reload button
     commands
-        .spawn_bundle(ButtonBundle {
+        .spawn(ButtonBundle {
             style: Style {
                 size: Size::new(Val::Px(150.0), Val::Px(65.0)),
-                margin: Rect::all(Val::Auto),
+                margin: UiRect::all(Val::Auto),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 ..Default::default()
             },
-            color: NORMAL_BUTTON.into(),
+            background_color: NORMAL_BUTTON.into(),
             ..Default::default()
         })
         .with_children(|parent| {
-            parent.spawn_bundle(TextBundle {
-                text: Text::with_section(
+            parent.spawn(TextBundle {
+                text: Text::from_section(
                     "Reload",
                     TextStyle {
                         font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                         font_size: 40.0,
                         color: Color::rgb(0.9, 0.9, 0.9),
-                    },
-                    Default::default(),
+                    }
                 ),
                 ..Default::default()
             });
@@ -64,7 +63,7 @@ const PRESSED_BUTTON: Color = Color::rgb(0.35, 0.75, 0.35);
 
 fn reload_system(
     mut interaction_query: Query<
-        (&Interaction, &mut UiColor),
+        (&Interaction, &mut BackgroundColor),
         (Changed<Interaction>, With<Button>),
     >,
     mut webview_commands: WebviewEventWriter<WebviewCommand>,

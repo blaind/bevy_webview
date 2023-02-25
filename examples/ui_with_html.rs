@@ -10,18 +10,20 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn_bundle(UiCameraBundle::default());
+    commands.spawn(Camera2dBundle::default());
 
-    commands.spawn_bundle(WebviewUIBundle {
-        webview: Webview {
-            html: Some(include_str!("ui_with_html.html").to_string()),
-            color: Color::rgb_u8(255, 228, 196),
-            ..Default::default()
-        },
-        style: Style {
-            size: Size::new(Val::Percent(30.0), Val::Percent(100.)),
-            ..Default::default()
-        },
-        ..Default::default()
-    });
-}
+    commands
+        .spawn(WebviewUIBundle {
+                webview: Webview {
+                    html: Some(include_str!("ui_with_html.html").to_string()),
+                    color: Color::rgb_u8(255, 228, 196),
+                    ..Default::default()
+                },
+                style: Style {
+                    size: Size::new(Val::Percent(30.0), Val::Percent(100.)),
+                    ..Default::default()
+                },
+                
+                ..Default::default()
+            });
+        }

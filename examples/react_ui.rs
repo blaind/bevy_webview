@@ -19,7 +19,7 @@ fn main() {
         .run();
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Resource)]
 pub struct CubeCount(usize);
 
 fn setup_webviews(mut commands: Commands) {
@@ -35,7 +35,7 @@ fn setup_webviews(mut commands: Commands) {
     }
 
     // 3d webview
-    commands.spawn_bundle(WebviewBundle {
+    commands.spawn(WebviewBundle {
         webview: Webview {
             uri: Some(String::from("https://bevyengine.org")),
             color: Color::rgba(0., 0., 0., 0.3),
@@ -44,7 +44,6 @@ fn setup_webviews(mut commands: Commands) {
         size: WebviewSize {
             x: 3.,
             y: 2.,
-            ppu: 300.,
             ..Default::default()
         },
         transform: Transform {
@@ -55,7 +54,7 @@ fn setup_webviews(mut commands: Commands) {
     });
 
     // UI webview (REACT)
-    commands.spawn_bundle(WebviewUIBundle {
+    commands.spawn(WebviewUIBundle {
         webview: Webview {
             uri: Some(String::from("http://localhost:3000/")),
             color: Color::rgba(0., 0., 0., 0.0),
@@ -63,7 +62,7 @@ fn setup_webviews(mut commands: Commands) {
         },
         style: Style {
             size: Size::new(Val::Percent(30.0), Val::Percent(80.)),
-            margin: Rect::all(Val::Px(50.)),
+            margin: UiRect::all(Val::Px(50.)),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
             ..Default::default()
@@ -78,30 +77,30 @@ fn setup_scene(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // ui camera
-    commands.spawn_bundle(UiCameraBundle::default());
+    commands.spawn(Camera2dBundle::default());
 
     // camera
-    commands.spawn_bundle(PerspectiveCameraBundle {
+    commands.spawn(Camera3dBundle {
         transform: Transform::from_xyz(-2.0, 2.5, 5.0)
             .looking_at(Vec3::new(0.0, 2.0, 0.0), Vec3::Y),
         ..Default::default()
     });
 
     // plane
-    commands.spawn_bundle(PbrBundle {
+    commands.spawn(PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Plane { size: 5.0 })),
         material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
         ..Default::default()
     });
     // cube
-    commands.spawn_bundle(PbrBundle {
+    commands.spawn(PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
         material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
         transform: Transform::from_xyz(0.0, 0.5, 0.0),
         ..Default::default()
     });
     // light
-    commands.spawn_bundle(PointLightBundle {
+    commands.spawn(PointLightBundle {
         point_light: PointLight {
             intensity: 1500.0,
             shadows_enabled: true,
@@ -112,12 +111,12 @@ fn setup_scene(
     });
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Resource, Debug)]
 pub struct CubeSpawn {
     count: usize,
 }
 
-#[derive(Component)]
+#[derive(Component, Resource)]
 pub struct Cube;
 
 fn cube_spawn_system(
@@ -136,7 +135,7 @@ fn cube_spawn_system(
 
         for _ in 0..event.count {
             commands
-                .spawn_bundle(PbrBundle {
+                .spawn(PbrBundle {
                     mesh: meshes.add(Mesh::from(shape::Cube { size: 0.3 })),
                     material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
                     transform: Transform::from_xyz(
@@ -155,7 +154,7 @@ fn cube_spawn_system(
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Resource, Debug)]
 pub struct CubeDestroy;
 
 fn cube_destroy_system(

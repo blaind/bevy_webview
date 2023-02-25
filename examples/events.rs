@@ -22,10 +22,9 @@ fn main() {
 struct TimeReceiver;
 
 fn setup(mut commands: Commands) {
-    commands.spawn_bundle(UiCameraBundle::default());
-
+    commands.spawn(Camera2dBundle::default());
     commands
-        .spawn_bundle(WebviewUIBundle {
+        .spawn(WebviewUIBundle {
             webview: Webview {
                 html: Some(include_str!("events.html").into()),
                 color: Color::rgb_u8(58, 58, 58),
@@ -33,7 +32,7 @@ fn setup(mut commands: Commands) {
             },
             style: Style {
                 size: Size::new(Val::Percent(50.0), Val::Percent(50.)),
-                margin: Rect::all(Val::Auto),
+                margin: UiRect::all(Val::Auto),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 ..Default::default()
@@ -42,15 +41,15 @@ fn setup(mut commands: Commands) {
         })
         .insert(TimeReceiver);
 
-    commands.insert_resource(TimeTick(Timer::new(Duration::from_millis(1_000), true)));
+    commands.insert_resource(TimeTick(Timer::new(Duration::from_millis(1_000), TimerMode::Repeating)));
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Resource, Debug)]
 pub struct LoginRequest {
     username: String,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Resource)]
 pub struct AppTime {
     seconds_since_startup: f64,
 }
@@ -70,7 +69,7 @@ fn login_handler(mut login_request_events: WebviewEventReader<LoginRequest>) {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize,Resource, Debug)]
 pub struct CloseRequest;
 
 fn close_handler(
@@ -86,6 +85,7 @@ fn close_handler(
     }
 }
 
+#[derive(Resource)]
 struct TimeTick(Timer);
 
 fn send_time_to_all_webviews_system(
@@ -95,7 +95,7 @@ fn send_time_to_all_webviews_system(
 ) {
     if tick.0.tick(time.delta()).just_finished() {
         app_time.send(AppTime {
-            seconds_since_startup: time.seconds_since_startup(),
+            seconds_since_startup: time.elapsed_seconds_f64(),
         });
     }
 }
