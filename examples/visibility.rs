@@ -35,28 +35,28 @@ fn get_webview() -> WebviewUIBundle {
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn_bundle(UiCameraBundle::default());
+    commands.spawn(Camera2dBundle::default());
 
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(60.0), Val::Percent(80.)),
-                margin: Rect::all(Val::Auto),
+                margin: UiRect::all(Val::Auto),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 ..Default::default()
             },
-            color: Color::NONE.into(),
+            background_color: BackgroundColor(Color::NONE).into(),
             ..Default::default()
         })
         .with_children(|parent| {
-            parent.spawn_bundle(get_webview());
+            parent.spawn(get_webview());
         })
         .insert(WebviewRoot);
 
     // root node
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(30.0), Val::Percent(80.0)),
                 flex_direction: FlexDirection::ColumnReverse,
@@ -64,33 +64,32 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 align_items: AlignItems::Center,
                 ..Default::default()
             },
-            color: Color::NONE.into(),
+            background_color: Color::NONE.into(),
             ..Default::default()
         })
         .with_children(|parent| {
             // toggle visibility
             parent
-                .spawn_bundle(ButtonBundle {
+                .spawn(ButtonBundle {
                     style: Style {
                         size: Size::new(Val::Px(200.0), Val::Px(65.0)),
-                        margin: Rect::all(Val::Px(20.)),
+                        margin: UiRect::all(Val::Px(20.)),
                         justify_content: JustifyContent::Center,
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    color: NORMAL_BUTTON.into(),
+                    background_color: NORMAL_BUTTON.into(),
                     ..Default::default()
                 })
                 .with_children(|parent| {
-                    parent.spawn_bundle(TextBundle {
-                        text: Text::with_section(
+                    parent.spawn(TextBundle {
+                        text: Text::from_section(
                             "Hide",
                             TextStyle {
                                 font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                                 font_size: 24.0,
                                 color: Color::rgb(0.9, 0.9, 0.9),
                             },
-                            Default::default(),
                         ),
                         ..Default::default()
                     });
@@ -99,27 +98,26 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
             // destroy
             parent
-                .spawn_bundle(ButtonBundle {
+                .spawn(ButtonBundle {
                     style: Style {
                         size: Size::new(Val::Px(200.0), Val::Px(65.0)),
-                        margin: Rect::all(Val::Px(20.)),
+                        margin: UiRect::all(Val::Px(20.)),
                         justify_content: JustifyContent::Center,
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    color: NORMAL_BUTTON.into(),
+                    background_color: NORMAL_BUTTON.into(),
                     ..Default::default()
                 })
                 .with_children(|parent| {
-                    parent.spawn_bundle(TextBundle {
-                        text: Text::with_section(
+                    parent.spawn(TextBundle {
+                        text: Text::from_section(
                             "Despawn",
                             TextStyle {
                                 font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                                 font_size: 24.0,
                                 color: Color::rgb(0.9, 0.9, 0.9),
                             },
-                            Default::default(),
                         ),
                         ..Default::default()
                     });
@@ -136,7 +134,7 @@ fn toggle_system(
     mut interaction_query: Query<
         (
             &Interaction,
-            &mut UiColor,
+            &mut BackgroundColor,
             &Children,
             Option<&SpawnToggleButton>,
             Option<&VisibilityToggleButton>,
@@ -162,7 +160,7 @@ fn toggle_system(
                         commands
                             .entity(webview_root.single())
                             .with_children(|parent| {
-                                parent.spawn_bundle(get_webview());
+                                parent.spawn(get_webview());
                             });
 
                         text.sections[0].value = "Despawn".to_string();

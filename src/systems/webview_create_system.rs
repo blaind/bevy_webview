@@ -33,12 +33,12 @@ pub(crate) fn create_webview_system(
     {
         if let Some(node) = node {
             let window_size =
-                WindowSize::new(node.size.x.round() as u32, node.size.y.round() as u32);
+                WindowSize::new(node.size().x.round() as u32, node.size().y.round() as u32);
 
             log::debug!(
                 "Webview {:?} (UI) added, window_size={:?}, texture_size_mb={:.2}",
                 entity,
-                node.size,
+                node.size(),
                 (window_size.width as usize * window_size.height as usize * 4) as f32
                     / 1024.
                     / 1024.
@@ -69,7 +69,7 @@ pub(crate) fn create_webview_system(
                         TextureFormat::Rgba8Unorm,
                     )),
                 ))
-                .insert(UiColor(webview.color));
+                .insert(BackgroundColor(webview.color));
         } else if let Some(webview_size) = webview_size {
             log::debug!(
                 "Webview {:?} (PBR) added, texture_size_mb={:.2}",
@@ -99,7 +99,7 @@ pub(crate) fn create_webview_system(
                 webview_size.y,
             ))));
 
-            commands.entity(entity).insert_bundle(PbrBundle {
+            commands.entity(entity).insert(PbrBundle {
                 mesh: quad_handle.clone(),
                 material: material_handle,
                 transform: *transform,

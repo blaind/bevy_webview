@@ -17,17 +17,17 @@ const URLS: [&'static str; 3] = [
 ];
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn_bundle(UiCameraBundle::default());
+    commands.spawn(Camera2dBundle::default());
 
     // webview
-    commands.spawn_bundle(WebviewUIBundle {
+    commands.spawn(WebviewUIBundle {
         webview: Webview {
             uri: Some(String::from(URLS[0])),
             ..Default::default()
         },
         style: Style {
             size: Size::new(Val::Percent(80.0), Val::Percent(80.)),
-            margin: Rect::all(Val::Auto),
+            margin: UiRect::all(Val::Auto),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
             ..Default::default()
@@ -37,27 +37,26 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     // reload button
     commands
-        .spawn_bundle(ButtonBundle {
+        .spawn(ButtonBundle {
             style: Style {
                 size: Size::new(Val::Px(150.0), Val::Px(65.0)),
-                margin: Rect::all(Val::Auto),
+                margin: UiRect::all(Val::Auto),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 ..Default::default()
             },
-            color: NORMAL_BUTTON.into(),
+            background_color: NORMAL_BUTTON.into(),
             ..Default::default()
         })
         .with_children(|parent| {
-            parent.spawn_bundle(TextBundle {
-                text: Text::with_section(
+            parent.spawn(TextBundle {
+                text: Text::from_section(
                     "Next",
                     TextStyle {
                         font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                         font_size: 40.0,
                         color: Color::rgb(0.9, 0.9, 0.9),
-                    },
-                    Default::default(),
+                    }
                 ),
                 ..Default::default()
             });
@@ -65,7 +64,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     commands.insert_resource(CurrentUrl(0));
 }
-
+#[derive(Resource)]
 struct CurrentUrl(usize);
 
 const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
@@ -74,7 +73,7 @@ const PRESSED_BUTTON: Color = Color::rgb(0.35, 0.75, 0.35);
 
 fn toggle_system(
     mut interaction_query: Query<
-        (&Interaction, &mut UiColor),
+        (&Interaction, &mut BackgroundColor),
         (Changed<Interaction>, With<Button>),
     >,
     mut webview_commands: WebviewEventWriter<WebviewCommand>,

@@ -1,5 +1,5 @@
 use bevy::{
-    input::{keyboard::KeyboardInput, ElementState},
+    input::{keyboard::KeyboardInput, ButtonState},
     prelude::*,
 };
 use crossbeam_channel::{Receiver, Sender};
@@ -16,7 +16,7 @@ pub(crate) enum WebviewAction {
     /// Mouse motion over webview
     MouseMotion((Entity, Vec2)),
     /// Webview was clicked
-    Click((Entity, MouseButton, ElementState, Vec2)),
+    Click((Entity, MouseButton, ButtonState, Vec2)),
     /// Webview was hovered
     Hover((Entity, Vec2)),
     /// Webview received keyboard input
@@ -53,6 +53,7 @@ pub(crate) struct TextureReceivedEvent {
 }
 
 /// Takes care of event handling between webview impl and bevy system
+#[derive(Resource)]
 pub(crate) struct EventTransport {
     pub webview_action_tx: Sender<WebviewAction>,
     pub texture_rx: Receiver<TextureReceivedEvent>,
