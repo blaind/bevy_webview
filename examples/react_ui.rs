@@ -76,8 +76,6 @@ fn setup_scene(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    // ui camera
-    commands.spawn(Camera2dBundle::default());
 
     // camera
     commands.spawn(Camera3dBundle {

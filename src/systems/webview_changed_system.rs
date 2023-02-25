@@ -9,7 +9,7 @@ use crate::{
 
 pub(crate) fn webview_changed_system(
     changed_webviews: Query<(Entity, &Webview), Changed<Webview>>,
-    webview_visibility_changes: Query<(Entity, &ComputedVisibility), (Changed<ComputedVisibility>, With<Webview>)>,
+    webview_visibility_changes: Query<(Entity, &Visibility), (Changed<ComputedVisibility>, With<Webview>)>,
     mut previous_webviews: Local<HashMap<Entity, Webview>>,
     event_transport: Res<EventTransport>,
     removed_webviews: RemovedComponents<Webview>,
@@ -67,12 +67,12 @@ pub(crate) fn webview_changed_system(
         log::debug!(
             "Webview {:?} visibility change: {:?}",
             entity,
-            visibility.is_visible()
+            visibility.is_visible
         );
 
         event_transport
             .webview_action_tx
-            .send(WebviewAction::SetVisibility(entity, visibility.is_visible()))
+            .send(WebviewAction::SetVisibility(entity, visibility.is_visible))
             .unwrap();
     }
 
