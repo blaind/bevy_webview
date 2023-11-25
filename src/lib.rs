@@ -26,10 +26,7 @@
 //!     });
 //! }
 //! ```
-use bevy::{
-    prelude::*,
-    ui::{widget::ImageMode, UiSystem},
-};
+use bevy::prelude::*;
 
 pub mod prelude {
     pub use crate::{
@@ -111,79 +108,79 @@ where
             .add_event::<WebviewEvent<WebviewCommand>>()
             .add_webview_input_event::<BuiltinWebviewEvent>(BUILTIN_RPC_INPUT_METHOD)
             // PRE-SYSTEMS
-            .add_system_to_stage(
-                CoreStage::PreUpdate,
-                systems::inject_rpc_requests_system.label(PreUpdateLabel::Pre),
+            .add_systems(
+                PreUpdate,
+                systems::inject_rpc_requests_system.in_set(PreUpdateLabel::Pre),
             )
             // Systems
-            .add_system(systems::rpc_builtin_event_handler)
-            .add_system(systems::webview_ui_focus_system)
-            .add_system(systems::ui_event)
+            .add_systems(Update, systems::rpc_builtin_event_handler)
+            .add_systems(Update, systems::webview_ui_focus_system)
+            .add_systems(Update, systems::ui_event)
             // PRE-PRE-POST updates - send events to webview
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
+            .add_systems(
+                PostUpdate,
                 systems::ui_size
-                    .label(PostUpdateLabel::PrePre)
-                    .after(UiSystem::Flex),
+                    .in_set(PostUpdateLabel::PrePre)
+                    .after(bevy::ui::UiSystem::Layout),
             )
             // PRE-POST updates - send events to webview
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
+            .add_systems(
+                PostUpdate,
                 systems::create_webview_system
-                    .label(PostUpdateLabel::Pre)
-                    .after(UiSystem::Flex),
+                    .in_set(PostUpdateLabel::Pre)
+                    .after(bevy::ui::UiSystem::Layout),
             )
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
-                systems::keyboard_event_system.label(PostUpdateLabel::Pre),
+            .add_systems(
+                PostUpdate,
+                systems::keyboard_event_system.in_set(PostUpdateLabel::Pre),
             )
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
-                systems::webview_changed_system.label(PostUpdateLabel::Pre),
+            .add_systems(
+                PostUpdate,
+                systems::webview_changed_system.in_set(PostUpdateLabel::Pre),
             )
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
-                systems::rpc_command_system.label(PostUpdateLabel::Pre),
+            .add_systems(
+                PostUpdate,
+                systems::rpc_command_system.in_set(PostUpdateLabel::Pre),
             )
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
-                systems::removed_webviews_system.label(PostUpdateLabel::Pre),
+            .add_systems(
+                PostUpdate,
+                systems::removed_webviews_system.in_set(PostUpdateLabel::Pre),
             )
             // POST updates - tick the webviews
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
+            .add_systems(
+                PostUpdate,
                 systems::rpc_fallthrough_event_logger
-                    .label(PostUpdateLabel::Update)
+                    .in_set(PostUpdateLabel::Update)
                     .after(PostUpdateLabel::Pre),
             )
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
+            .add_systems(
+                PostUpdate,
                 systems::tick_webviews_system
-                    .label(PostUpdateLabel::Update)
+                    .in_set(PostUpdateLabel::Update)
                     .after(PostUpdateLabel::Pre),
             )
             // POST-POST updates - after tick, update textures
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
+            .add_systems(
+                PostUpdate,
                 systems::update_webview_textures
-                    .label(PostUpdateLabel::Post)
+                    .in_set(PostUpdateLabel::Post)
                     .after(PostUpdateLabel::Update),
             )
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
+            .add_systems(
+                PostUpdate,
                 systems::app_exit
-                    .label(PostUpdateLabel::Post)
+                    .in_set(PostUpdateLabel::Post)
                     .after(PostUpdateLabel::Update),
             );
     }
 }
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemLabel)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
 pub(crate) enum PreUpdateLabel {
     Pre,
 }
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemLabel)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
 pub(crate) enum PostUpdateLabel {
     PrePre,
     Pre,
@@ -263,12 +260,6 @@ pub struct WebviewUIBundle {
     /// Describes the style including flexbox settings
     pub style: Style,
 
-    /// Configures how the image should scale
-    pub image_mode: ImageMode,
-
-    /// The calculated size based on the given image
-    pub calculated_size: CalculatedSize,
-
     /// The transform of the node
     pub transform: Transform,
 
@@ -277,6 +268,9 @@ pub struct WebviewUIBundle {
 
     /// Describes the visibility properties of the node
     pub visibility: Visibility,
+
+    pub view_visibility: ViewVisibility,
+    pub inherited_visibility: InheritedVisibility,
 
     /// Interaction state
     pub interaction: WebviewInteraction,
@@ -319,7 +313,7 @@ impl Default for Webview {
 /// Any future command added here should be available in the core API's:
 /// * https://docs.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.1072.54
 /// * https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#webkit-web-view-reload
-#[derive(Component, Serialize, Debug, Clone)]
+#[derive(Resource, Component, Serialize, Debug, Clone)]
 pub enum WebviewCommand {
     /// Navigate to the given URI
     LoadUri(String),

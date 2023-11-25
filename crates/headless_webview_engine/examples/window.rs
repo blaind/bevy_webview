@@ -5,7 +5,7 @@ use headless_webview::{
     self,
     types::{self, WindowSize},
     webview::Color,
-    WebviewBuilder, EngineWebview,
+    EngineWebview, WebviewBuilder,
 };
 
 pub fn main() {

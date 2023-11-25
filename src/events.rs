@@ -10,18 +10,19 @@ use serde::{Deserialize, Serialize};
 use crate::{systems, PostUpdateLabel, PreUpdateLabel};
 
 /// Mapping of RPC Input Event methods
-#[derive(Default)]
+#[derive(Default, Resource)]
 pub(crate) struct InputEventMapping {
     pub events: HashMap<TypeId, &'static str>,
 }
 
 /// Mapping of RPC Output Event methods
-#[derive(Default)]
+#[derive(Default, Resource)]
 pub(crate) struct OutputEventMapping {
     pub events: HashMap<TypeId, &'static str>,
 }
 
 // RPC events from a webview
+#[derive(Resource, Event)]
 pub(crate) struct InputEvent {
     // Sending entity
     pub entity: Entity,
@@ -45,7 +46,7 @@ impl InputEvent {
 }
 
 /// Wraps an event of type `T` into a webview structure
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Event)]
 pub struct WebviewEvent<T> {
     pub(crate) entity: Option<Entity>,
     pub(crate) val: T,
@@ -64,16 +65,16 @@ pub struct WebviewEventReader<'w, 's, T: Resource> {
 }
 
 impl<'w, 's, T: Resource> WebviewEventReader<'w, 's, T> {
-    pub fn iter(&mut self) -> impl DoubleEndedIterator<Item = &T> {
+    pub fn iter(&mut self) -> impl Iterator<Item = &T> {
         self.events
-            .iter_with_id()
+            .read_with_id()
             .map(|(event, _id)| event)
             .map(|event| &event.val)
     }
 
-    pub fn iter_with_entity(&mut self) -> impl DoubleEndedIterator<Item = (&T, Entity)> {
+    pub fn iter_with_entity(&mut self) -> impl Iterator<Item = (&T, Entity)> {
         self.events
-            .iter_with_id()
+            .read_with_id()
             .map(|(event, _id)| event)
             .map(|event| (&event.val, event.entity.unwrap()))
     }
@@ -91,11 +92,11 @@ impl<'w, 's, T: Resource> WebviewEventReader<'w, 's, T> {
 
 /// Send Events to webview Javascript
 #[derive(SystemParam)]
-pub struct WebviewEventWriter<'w, 's, T: Resource> {
-    pub events: EventWriter<'w, 's, WebviewEvent<T>>,
+pub struct WebviewEventWriter<'w, T: Resource> {
+    pub events: EventWriter<'w, WebviewEvent<T>>,
 }
 
-impl<'w, 's, T: Resource> WebviewEventWriter<'w, 's, T> {
+impl<'w, 's, T: Resource> WebviewEventWriter<'w, T> {
     /// Will send an event to **all** webviews
     pub fn send(&mut self, event: T) {
         self.events.send(WebviewEvent::new(None, event));
@@ -174,8 +175,8 @@ impl WebviewApp for App {
 
         self.add_event::<WebviewEvent<T>>();
 
-        self.add_system_to_stage(
-            CoreStage::PreUpdate,
+        self.add_systems(
+            PreUpdate,
             systems::rpc_event_receiver::<T>.after(PreUpdateLabel::Pre),
         );
         self
@@ -194,9 +195,9 @@ impl WebviewApp for App {
 
         self.add_event::<WebviewEvent<T>>();
 
-        self.add_system_to_stage(
-            CoreStage::PostUpdate,
-            systems::rpc_event_sender::<T>.label(PostUpdateLabel::Pre),
+        self.add_systems(
+            PostUpdate,
+            systems::rpc_event_sender::<T>.in_set(PostUpdateLabel::Pre),
         );
 
         self
@@ -204,7 +205,7 @@ impl WebviewApp for App {
 }
 
 /// Enum of builtin event methods
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Resource)]
 #[serde(rename_all(deserialize = "lowercase"))]
 pub(crate) enum BuiltinWebviewEvent {
     Despawn,

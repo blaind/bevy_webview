@@ -6,7 +6,7 @@ use crate::events::InputEvent;
 
 pub(crate) fn rpc_fallthrough_event_logger(mut input_events: EventReader<InputEvent>) {
     input_events
-        .iter()
+        .read()
         .filter(|v| !v.matched.load(Ordering::SeqCst))
         .for_each(|event| 
             log::warn!(

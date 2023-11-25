@@ -1,12 +1,12 @@
 use bevy::log;
 
-use bevy::prelude::Entity;
-use crossbeam_channel::{Receiver, Sender};
-use std::collections::HashMap;
-
 use crate::events::InputEvent;
 use crate::types::{TextureReceivedEvent, WebviewAction};
 use crate::WebviewCommand;
+use bevy::input::ButtonState;
+use bevy::prelude::Entity;
+use crossbeam_channel::{Receiver, Sender};
+use std::collections::HashMap;
 
 use headless_webview::prelude::*;
 use headless_webview::types::{
@@ -86,8 +86,8 @@ pub(crate) fn webview_runner_inner<T: HeadlessWindow>(
                             bevy::prelude::MouseButton::Other(_) => continue,
                         },
                         state: match element_state {
-                            bevy::input::ElementState::Pressed => ElementState::Pressed,
-                            bevy::input::ElementState::Released => ElementState::Released,
+                            ButtonState::Pressed => ElementState::Pressed,
+                            ButtonState::Released => ElementState::Released,
                         },
 
                         // TODO: move position calc to the webview lib?
@@ -108,8 +108,8 @@ pub(crate) fn webview_runner_inner<T: HeadlessWindow>(
                 if let Some(w) = webviews.get(&entity) {
                     w.webview.send_keyboard_input(KeyboardInput {
                         state: match keyboard_input.state {
-                            bevy::input::ElementState::Pressed => ElementState::Pressed,
-                            bevy::input::ElementState::Released => ElementState::Released,
+                            ButtonState::Pressed => ElementState::Pressed,
+                            ButtonState::Released => ElementState::Released,
                         },
                     })
                 }
@@ -220,6 +220,7 @@ pub(crate) fn webview_runner_inner<T: HeadlessWindow>(
             }
 
             WebviewAction::SetVisibility(entity, is_visible) => {
+                log::debug!("Webview {:?}: !!!!!!!!!! VISIBLE {:?}", entity, is_visible);
                 if let Some(w) = webviews.get_mut(&entity) {
                     w.webview.set_is_visible(is_visible);
                 }

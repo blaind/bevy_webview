@@ -3,11 +3,11 @@ use bevy_webview::prelude::*;
 
 fn main() {
     App::new()
-        .insert_resource(Msaa { samples: 4 })
+        .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins)
-        .add_plugin(WebviewPlugin::with_engine(webview_engine::headless))
-        .add_startup_system(setup)
-        .add_system(rotator)
+        .add_plugins(WebviewPlugin::with_engine(webview_engine::headless))
+        .add_systems(Startup, setup)
+        .add_systems(Update, rotator)
         .run();
 }
 
@@ -17,20 +17,23 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // plane
-    commands.spawn_bundle(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Plane { size: 5.0 })),
+    commands.spawn(PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Plane {
+            size: 5.0,
+            subdivisions: 0,
+        })),
         material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
         ..Default::default()
     });
     // cube
-    commands.spawn_bundle(PbrBundle {
+    commands.spawn(PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
         material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
         transform: Transform::from_xyz(0.0, 0.5, 0.0),
         ..Default::default()
     });
     // light
-    commands.spawn_bundle(PointLightBundle {
+    commands.spawn(PointLightBundle {
         point_light: PointLight {
             intensity: 1500.0,
             shadows_enabled: true,
@@ -40,13 +43,14 @@ fn setup(
         ..Default::default()
     });
     // camera
-    commands.spawn_bundle(PerspectiveCameraBundle {
+    commands.spawn(Camera3dBundle {
         transform: Transform::from_xyz(-2.0, 2.5, 5.0)
             .looking_at(Vec3::new(0.0, 2.0, 0.0), Vec3::Y),
+        tonemapping: bevy::core_pipeline::tonemapping::Tonemapping::SomewhatBoringDisplayTransform,
         ..Default::default()
     });
     // webview
-    commands.spawn_bundle(WebviewBundle {
+    commands.spawn(WebviewBundle {
         webview: Webview {
             uri: Some(String::from("https://bevyengine.org/")),
             color: Color::rgba(0.3, 0.3, 0.3, 0.5),

@@ -21,7 +21,7 @@ pub(crate) fn rpc_event_sender<T>(
         return;
     }
 
-    for event in event_reader.iter() {
+    for event in event_reader.read() {
         let event_key = output_event_methods.events.get(&TypeId::of::<T>()).unwrap();
 
         let payload = serde_json::to_string(&event.val).unwrap();

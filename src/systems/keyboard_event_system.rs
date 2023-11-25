@@ -14,7 +14,7 @@ pub(crate) fn keyboard_event_system(
 ) {
     for (entity, interaction) in webview_query.iter() {
         if let WebviewInteraction::Clicked(_) | WebviewInteraction::Hovered(_) = interaction {
-            for keyboard_event in keyboard_input_events.iter() {
+            for keyboard_event in keyboard_input_events.read() {
                 event_transport
                     .webview_action_tx
                     .send(WebviewAction::TypeKeyboard((
