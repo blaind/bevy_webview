@@ -8,9 +8,9 @@ use crate::{
 /// This system takes care of initialing required `PbrBundle` for the webview
 pub(crate) fn removed_webviews_system(
     event_transport: ResMut<EventTransport>,
-    removed_webviews: RemovedComponents<Webview>,
+    mut removed_webviews: RemovedComponents<Webview>,
 ) {
-    for entity in removed_webviews.iter() {
+    for entity in removed_webviews.read() {
         event_transport
             .webview_action_tx
             .send(WebviewAction::Remove(entity))

@@ -9,10 +9,13 @@ use crate::{
 
 pub(crate) fn webview_changed_system(
     changed_webviews: Query<(Entity, &Webview), Changed<Webview>>,
-    webview_visibility_changes: Query<(Entity, &Visibility), (Changed<Visibility>, With<Webview>)>,
+    webview_visibility_changes: Query<
+        (Entity, &InheritedVisibility),
+        (Changed<InheritedVisibility>, With<Webview>),
+    >,
     mut previous_webviews: Local<HashMap<Entity, Webview>>,
     event_transport: Res<EventTransport>,
-    removed_webviews: RemovedComponents<Webview>,
+    mut removed_webviews: RemovedComponents<Webview>,
 ) {
     for (entity, webview) in changed_webviews.iter() {
         let previous = match previous_webviews.get(&entity) {
@@ -67,16 +70,16 @@ pub(crate) fn webview_changed_system(
         log::debug!(
             "Webview {:?} visibility change: {:?}",
             entity,
-            visibility.is_visible
+            visibility.get()
         );
 
         event_transport
             .webview_action_tx
-            .send(WebviewAction::SetVisibility(entity, visibility.is_visible))
+            .send(WebviewAction::SetVisibility(entity, visibility.get()))
             .unwrap();
     }
 
-    for entity in removed_webviews.iter() {
+    for entity in removed_webviews.read() {
         previous_webviews.remove(&entity);
     }
 }

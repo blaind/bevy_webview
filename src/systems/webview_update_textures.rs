@@ -19,7 +19,7 @@ pub(crate) fn update_webview_textures(
             Option<&Handle<StandardMaterial>>,
             Option<&Node>,
             Option<&mut UiImage>,
-            Option<&mut UiColor>,
+            Option<&mut BackgroundColor>,
             &mut WebviewState,
         ),
         With<Webview>,
@@ -74,7 +74,7 @@ pub(crate) fn update_webview_textures(
 
                 /////// ABSTRACT //////
                 if needs_new_texture || !webview_state.texture_added {
-                    let mut material = standard_materials.get_mut(material_handle).unwrap();
+                    let material = standard_materials.get_mut(material_handle).unwrap();
 
                     let mut new_image = Image::new(
                         Extent3d {
@@ -113,7 +113,7 @@ pub(crate) fn update_webview_textures(
             // UI bundle
             (None, Some(_ui_node), mut ui_image) => {
                 let image = match &ui_image {
-                    Some(ui_image) => images.get_mut(&ui_image.0),
+                    Some(ui_image) => images.get_mut(&ui_image.texture),
                     None => None,
                 };
 
@@ -125,7 +125,7 @@ pub(crate) fn update_webview_textures(
                     {
                         needs_new_texture = false;
                     } else {
-                        images.remove(ui_image.as_ref().unwrap().0.clone()); // unwrap ok, checked before
+                        images.remove(ui_image.as_ref().unwrap().texture.clone()); // unwrap ok, checked before
                         ui_image = None;
                     }
                 }
@@ -162,11 +162,13 @@ pub(crate) fn update_webview_textures(
 
                     /////// ABSTRACT //////
                     match &mut ui_image {
-                        Some(ui_image) => ui_image.0 = image_handle,
+                        Some(ui_image) => ui_image.texture = image_handle,
                         None => {
-                            commands
-                                .entity(texture_event.entity)
-                                .insert(UiImage(image_handle));
+                            commands.entity(texture_event.entity).insert(UiImage {
+                                texture: image_handle,
+                                flip_x: false,
+                                flip_y: false,
+                            });
                         }
                     }
 

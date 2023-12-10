@@ -6,22 +6,21 @@ use bevy_webview::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(WebviewPlugin::with_engine(webview_engine::headless))
-        .add_startup_system(setup)
-        .add_system(change_webview_system)
+        .add_plugins(WebviewPlugin::with_engine(webview_engine::headless))
+        .add_systems(Startup, setup)
+        .add_systems(Update, change_webview_system)
         .run();
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn_bundle(UiCameraBundle::default());
-
+    commands.spawn(Camera2dBundle::default());
     commands.insert_resource(Elapsed {
         iteration: 0,
-        timer: Timer::new(Duration::from_millis(2000), true),
+        timer: Timer::new(Duration::from_millis(2000), TimerMode::Repeating),
     });
 }
 
-#[derive(Component, Debug)]
+#[derive(Resource, Component, Debug)]
 struct Elapsed {
     iteration: usize,
     timer: Timer,
@@ -36,19 +35,22 @@ fn change_webview_system(
     if elapsed.timer.tick(time.delta()).just_finished() {
         if elapsed.iteration == 0 {
             // at first tick, spawn the webview
-            commands.spawn_bundle(WebviewUIBundle {
+            commands.spawn(WebviewUIBundle {
                 webview: Webview {
                     uri: Some("https://bevyengine.org/".into()),
-                    ..Default::default()
+                    ..default()
                 },
                 style: Style {
-                    size: Size::new(Val::Percent(50.0), Val::Percent(50.)),
-                    margin: Rect::all(Val::Auto),
+                    width: Val::Percent(100.),
+                    height: Val::Percent(100.),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
-                    ..Default::default()
+                    ..default()
                 },
-                ..Default::default()
+                visibility: Visibility::Inherited,
+                inherited_visibility: InheritedVisibility::default(),
+                view_visibility: ViewVisibility::default(),
+                ..default()
             });
 
             elapsed.iteration += 1;

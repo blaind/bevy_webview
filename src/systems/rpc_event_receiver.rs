@@ -15,7 +15,7 @@ pub(crate) fn rpc_event_receiver<T>(
     T: Resource + for<'de> serde::Deserialize<'de>,
 {
     for event in input_events
-        .iter()
+        .read()
         .filter(|v| {
             let expected = Some(v.request.method.as_str());
             let matched = input_event_methods

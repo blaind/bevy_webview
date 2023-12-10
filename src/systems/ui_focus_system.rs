@@ -1,5 +1,5 @@
 //! This module is based on bevy_ui, with added positions for Interaction
-use bevy::{core::FloatOrd, input::ElementState, prelude::*, ui::FocusPolicy};
+use bevy::{input::ButtonState, prelude::*, ui::FocusPolicy, utils::FloatOrd};
 
 use crate::{
     types::{EventTransport, WebviewAction},
@@ -31,7 +31,7 @@ pub struct State {
 // based on bevy_ui
 pub(crate) fn webview_ui_focus_system(
     mut state: Local<State>,
-    windows: Res<Windows>,
+    windows: Query<&Window>,
     mouse_button_input: Res<Input<MouseButton>>,
     touches_input: Res<Touches>,
     mut node_query: Query<
@@ -47,10 +47,7 @@ pub(crate) fn webview_ui_focus_system(
     >,
     event_transport: ResMut<EventTransport>,
 ) {
-    let cursor_position = if let Some(cursor_position) = windows
-        .get_primary()
-        .and_then(|window| window.cursor_position())
-    {
+    let cursor_position = if let Some(cursor_position) = windows.single().cursor_position() {
         cursor_position
     } else {
         return;
@@ -79,7 +76,7 @@ pub(crate) fn webview_ui_focus_system(
                         .send(WebviewAction::Click((
                             entity,
                             MouseButton::Left,
-                            ElementState::Released,
+                            ButtonState::Released,
                             offset, // FIXME : currently using wrong offset
                         )))
                         .unwrap();
@@ -99,9 +96,9 @@ pub(crate) fn webview_ui_focus_system(
         .iter_mut()
         .filter_map(
             |(entity, node, global_transform, interaction, focus_policy, clip)| {
-                let position = global_transform.translation;
+                let position = global_transform.translation();
                 let ui_position = position.truncate();
-                let extents = node.size / 2.0;
+                let extents = node.size() / 2.0;
                 let mut min = ui_position - extents;
                 let mut max = ui_position + extents;
                 if let Some(clip) = clip {
@@ -154,7 +151,7 @@ pub(crate) fn webview_ui_focus_system(
                     .send(WebviewAction::Click((
                         entity,
                         MouseButton::Left,
-                        ElementState::Pressed,
+                        ButtonState::Pressed,
                         offset,
                     )))
                     .unwrap();
@@ -166,7 +163,7 @@ pub(crate) fn webview_ui_focus_system(
                     .send(WebviewAction::Click((
                         entity,
                         MouseButton::Right,
-                        ElementState::Pressed,
+                        ButtonState::Pressed,
                         offset,
                     )))
                     .unwrap();

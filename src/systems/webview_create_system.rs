@@ -32,13 +32,13 @@ pub(crate) fn create_webview_system(
     for (entity, webview, transform, global_transform, node, webview_size) in added_webviews.iter()
     {
         if let Some(node) = node {
-            let window_size =
-                WindowSize::new(node.size.x.round() as u32, node.size.y.round() as u32);
+            let win_size = node.size();
+            let window_size = WindowSize::new(win_size.x.round() as u32, win_size.y.round() as u32);
 
             log::debug!(
                 "Webview {:?} (UI) added, window_size={:?}, texture_size_mb={:.2}",
                 entity,
-                node.size,
+                win_size,
                 (window_size.width as usize * window_size.height as usize * 4) as f32
                     / 1024.
                     / 1024.
@@ -56,8 +56,8 @@ pub(crate) fn create_webview_system(
             // UI node - insert placeholder image
             commands
                 .entity(entity)
-                .insert(UiImage(
-                    images.add(Image::new(
+                .insert(UiImage {
+                    texture: images.add(Image::new(
                         Extent3d {
                             width: window_size.width as u32,
                             height: window_size.height as u32,
@@ -68,8 +68,10 @@ pub(crate) fn create_webview_system(
                             .repeat(window_size.width as usize * window_size.height as usize),
                         TextureFormat::Rgba8Unorm,
                     )),
-                ))
-                .insert(UiColor(webview.color));
+                    flip_x: false,
+                    flip_y: false,
+                })
+                .insert(BackgroundColor(webview.color));
         } else if let Some(webview_size) = webview_size {
             log::debug!(
                 "Webview {:?} (PBR) added, texture_size_mb={:.2}",
@@ -99,7 +101,7 @@ pub(crate) fn create_webview_system(
                 webview_size.y,
             ))));
 
-            commands.entity(entity).insert_bundle(PbrBundle {
+            commands.entity(entity).insert(PbrBundle {
                 mesh: quad_handle.clone(),
                 material: material_handle,
                 transform: *transform,

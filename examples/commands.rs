@@ -6,37 +6,39 @@ use bevy_webview::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(WebviewPlugin::with_engine(webview_engine::headless))
-        .add_startup_system(setup)
-        .add_system(send_commands_system)
+        .add_plugins(WebviewPlugin::with_engine(webview_engine::headless))
+        .add_systems(Startup, setup)
+        .add_systems(Update, send_commands_system)
         .run();
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn_bundle(UiCameraBundle::default());
+    commands.spawn(Camera2dBundle::default());
 
-    commands.spawn_bundle(WebviewUIBundle {
+    commands.spawn(WebviewUIBundle {
         webview: Webview {
             uri: Some("https://bevyengine.org/".into()),
             ..Default::default()
         },
         style: Style {
-            size: Size::new(Val::Percent(50.0), Val::Percent(50.)),
-            margin: Rect::all(Val::Auto),
+            width: Val::Percent(50.),
+            height: Val::Percent(50.),
+            // margin: Rect::all(Val::Auto),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
             ..Default::default()
         },
+        visibility: Visibility::Inherited,
         ..Default::default()
     });
 
     commands.insert_resource(Elapsed {
         iteration: 0,
-        timer: Timer::new(Duration::from_millis(2000), true),
+        timer: Timer::new(Duration::from_millis(2000), TimerMode::Repeating),
     });
 }
 
-#[derive(Component)]
+#[derive(Component, Resource)]
 struct Elapsed {
     iteration: usize,
     timer: Timer,
